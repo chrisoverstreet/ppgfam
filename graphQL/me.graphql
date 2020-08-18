@@ -1,0 +1,11 @@
+query me {
+  me {
+    id
+    displayName
+    createdAt
+    avatar {
+      id
+      path
+    }
+  }
+}

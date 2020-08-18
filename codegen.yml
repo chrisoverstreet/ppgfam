@@ -1,0 +1,17 @@
+overwrite: true
+schema: ${NEXT_PUBLIC_APOLLO_URI}
+documents: "**/*.graphql"
+generates:
+  __generated__/graphql.tsx:
+    plugins:
+      - "typescript"
+      - "typescript-operations"
+      - "typescript-react-apollo"
+      - "fragment-matcher"
+    config:
+      typesPrefix: I
+      scalars:
+        Date: Date
+  __generated__/graphql.schema.json:
+    plugins:
+      - "introspection"
