@@ -3,6 +3,7 @@ import Head from 'next/head';
 import { useApolloClient } from '@apollo/client';
 import { useAuth0 } from '@auth0/auth0-react';
 
+import MainLayout from '../components/MainLayout';
 import { useMeQuery } from '../__generated__/graphql';
 
 const IndexPage: React.FunctionComponent = () => {
@@ -38,7 +39,7 @@ const IndexPage: React.FunctionComponent = () => {
       <Head>
         <title>PPG Fam</title>
       </Head>
-      <div>
+      <MainLayout>
         <h1>Home Page</h1>
         <div>
           {isAuthenticated && (
@@ -51,7 +52,7 @@ const IndexPage: React.FunctionComponent = () => {
               Log out
             </button>
           )}
-          {!isAuthenticated && !isLoading && typeof window !== 'undefined' && (
+          {!isAuthenticated && typeof window !== 'undefined' && (
             <button
               onClick={(event) => {
                 event.preventDefault();
@@ -66,7 +67,7 @@ const IndexPage: React.FunctionComponent = () => {
           <p>Loading...</p>
         )}
         <p>{data?.me && JSON.stringify(data?.me)}</p>
-      </div>
+      </MainLayout>
     </>
   );
 };
