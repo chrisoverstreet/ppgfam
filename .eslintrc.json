@@ -25,5 +25,10 @@
   "rules": {
     "no-console": "warn",
     "prettier/prettier": "warn"
+  },
+  "settings": {
+    "react": {
+      "version": "detect"
+    }
   }
 }

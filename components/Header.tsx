@@ -1,6 +1,8 @@
 import * as React from 'react';
 import { useRouter } from 'next/router';
 
+import AddIcon from '../icons/add.svg';
+import Button from './core/Button';
 import ListIcon from '../icons/list.svg';
 import MapIcon from '../icons/map.svg';
 import SearchIcon from '../icons/search.svg';
@@ -64,12 +66,15 @@ const Header: React.FunctionComponent = () => {
       >
         <ListIcon height={24} width={24} color={theme.colors.blue} />
       </button>
-
+      <Button className="add-location-btn" onClick={() => alert('test')}>
+        <AddIcon height={24} width={24} style={{ marginRight: 4 }} />
+        Add Location
+      </Button>
       <style jsx>
         {`
           header {
             display: flex;
-            padding: 24px 0 0 0;
+            padding: 24px 24px 0 0;
           }
 
           .search {
@@ -123,6 +128,10 @@ const Header: React.FunctionComponent = () => {
               cursor: pointer;
               filter: grayscale(100%);
             }
+          }
+
+          header :global(.add-location-btn) {
+            margin-left: auto;
           }
         `}
       </style>
