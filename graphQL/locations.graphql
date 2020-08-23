@@ -1,0 +1,20 @@
+query locations($query: String, $first: Int, $startAfter: String) {
+  locations(query: $query, first: $first, startAfter: $startAfter) {
+    edges {
+      node {
+        id
+        name
+        latitude
+        longitude
+        type
+        userId
+      }
+      cursor
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+    totalCount
+  }
+}
