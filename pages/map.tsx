@@ -1,14 +1,23 @@
 import * as React from 'react';
 import ReactMapGL, { Marker, ViewportProps } from 'react-map-gl';
+import { debounce } from 'lodash';
 
 import MainLayout from '../components/MainLayout';
 import { Coordinates } from 'viewport-mercator-project';
-import { useLocationsQuery } from '../__generated__/graphql';
+import { ILocation, useLocationsQuery } from '../__generated__/graphql';
 import { useRouter } from 'next/router';
 import { WebMercatorViewport } from 'react-map-gl';
 
 const Map: React.FunctionComponent = () => {
   const router = useRouter();
+
+  const [locations, setLocations] = React.useState<
+    ({ __typename?: 'Location' } & Pick<
+      ILocation,
+      'id' | 'name' | 'latitude' | 'longitude' | 'type' | 'userId'
+    >)[]
+  >([]);
+  const debouncedSetLocations = debounce(setLocations, 500);
 
   const query: string =
     (Array.isArray(router.query.q) ? router.query.q[0] : router.query.q) || '';
@@ -21,6 +30,10 @@ const Map: React.FunctionComponent = () => {
 
   const { data } = useLocationsQuery({
     variables: { query },
+    onCompleted: (data) =>
+      debouncedSetLocations(
+        data?.locations.edges.map((edge) => edge.node) ?? [],
+      ),
   });
 
   React.useEffect(() => {
@@ -55,7 +68,7 @@ const Map: React.FunctionComponent = () => {
       ...newViewport,
       zoom: Math.min(newViewport.zoom, 8),
     });
-  }, [data]);
+  }, [locations]);
 
   return (
     <MainLayout>
@@ -66,7 +79,7 @@ const Map: React.FunctionComponent = () => {
         mapboxApiAccessToken={process.env.NEXT_PUBLIC_MAPBOX_PUBLIC_TOKEN}
         onViewportChange={setViewport}
       >
-        {data?.locations.edges.map(({ node: location }) => (
+        {locations.map((location) => (
           <Marker
             key={location.id}
             latitude={location.latitude}

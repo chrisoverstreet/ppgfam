@@ -1,6 +1,7 @@
 import * as React from 'react';
 
 import Aside from './Aside';
+import Header from './Header';
 import theme from '../lib/theme';
 
 const MainLayout: React.FunctionComponent = ({
@@ -9,7 +10,7 @@ const MainLayout: React.FunctionComponent = ({
   return (
     <div className="root">
       <Aside />
-      <header>Header</header>
+      <Header />
       <main>{children}</main>
       <style jsx>
         {`
@@ -20,7 +21,7 @@ const MainLayout: React.FunctionComponent = ({
               'aside header'
               'aside main';
             grid-template-columns: 240px 1fr;
-            grid-template-rows: 56px 1fr;
+            grid-template-rows: 60px 1fr;
             height: 100vh;
             overflow: hidden;
             width: 100%;
@@ -34,7 +35,7 @@ const MainLayout: React.FunctionComponent = ({
             grid-area: header;
           }
 
-          .root :global(main) {
+          main {
             grid-area: main;
             overflow-y: auto;
           }
