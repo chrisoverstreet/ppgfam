@@ -1,15 +1,71 @@
 import * as React from 'react';
+import css from 'styled-jsx/css';
 import ReactMapGL, { Marker, ViewportProps } from 'react-map-gl';
 import { debounce } from 'lodash';
+import { usePopper } from 'react-popper';
 
 import MainLayout from '../components/MainLayout';
+import PinIcon from '../icons/pin.svg';
 import { Coordinates } from 'viewport-mercator-project';
-import { ILocation, useLocationsQuery } from '../__generated__/graphql';
+import {
+  ILocation,
+  ILocationType,
+  useLocationsQuery,
+} from '../__generated__/graphql';
 import { useRouter } from 'next/router';
 import { WebMercatorViewport } from 'react-map-gl';
+import theme from '../lib/theme';
+
+const PIN = css.resolve`
+  svg {
+    color: ${theme.colors.red500};
+    cursor: pointer;
+    pointer-events: none;
+    height: 48px;
+    transition: transform 0.15s ease-in;
+    transform-origin: bottom center;
+    transform: translate(-50%, -48px);
+
+    &[data-type='${ILocationType.Lz}'] {
+      color: ${theme.colors.red500};
+    }
+   
+    &[data-type='${ILocationType.Home}'] {
+      color: ${theme.colors.blue};
+    }
+    
+    &[data-type='${ILocationType.School}'] {
+      color: ${theme.colors.amber500};
+    }
+
+    :hover {
+      transform: translate(-50%, -48px) scale(1.5);
+    }
+
+    & > :global(path) {
+      pointer-events: auto;
+    }
+  }
+`;
 
 const Map: React.FunctionComponent = () => {
   const router = useRouter();
+
+  const [referenceElement, setReferenceElement] = React.useState(null);
+  const popperElement = React.useRef(null);
+  const arrowElement = React.useRef(null);
+
+  const { styles, attributes } = usePopper(
+    referenceElement,
+    popperElement.current,
+    {
+      modifiers: [
+        { name: 'arrow', options: { element: arrowElement.current } },
+        { name: 'offset', options: { offset: [0, 24] } },
+      ],
+      placement: 'top',
+    },
+  );
 
   const [locations, setLocations] = React.useState<
     ({ __typename?: 'Location' } & Pick<
@@ -18,6 +74,14 @@ const Map: React.FunctionComponent = () => {
     >)[]
   >([]);
   const debouncedSetLocations = debounce(setLocations, 500);
+
+  const [activeLocation, setActiveLocation] = React.useState<
+    | ({ __typename?: 'Location' } & Pick<
+        ILocation,
+        'id' | 'name' | 'latitude' | 'longitude' | 'type' | 'userId'
+      >)
+    | null
+  >(null);
 
   const query: string =
     (Array.isArray(router.query.q) ? router.query.q[0] : router.query.q) || '';
@@ -60,7 +124,7 @@ const Map: React.FunctionComponent = () => {
     const newViewport = new WebMercatorViewport({
       height: viewport.height || 500,
       width: viewport.width || 500,
-    }).fitBounds(bounds, { padding: 25 });
+    }).fitBounds(bounds, { padding: 100 });
 
     setViewport({
       ...newViewport,
@@ -83,10 +147,53 @@ const Map: React.FunctionComponent = () => {
             latitude={location.latitude}
             longitude={location.longitude}
           >
-            {location.name}
+            <PinIcon
+              className={PIN.className}
+              data-type={location.type}
+              onClick={() =>
+                router.push(
+                  '/location/[locationId]',
+                  `/location/${location.id}`,
+                )
+              }
+              onMouseEnter={(event) => {
+                setReferenceElement(event.currentTarget);
+                setActiveLocation(location);
+              }}
+              onMouseLeave={() => {
+                setReferenceElement(null);
+                setActiveLocation(null);
+              }}
+            />
+            {PIN.styles}
           </Marker>
         ))}
       </ReactMapGL>
+      <div
+        ref={popperElement}
+        style={styles.popper}
+        {...attributes.popper}
+        className="tooltip"
+        data-visible={!!referenceElement}
+      >
+        {activeLocation?.name}
+        <div ref={arrowElement} className="arrow" style={styles.arrow} />
+      </div>
+      <style jsx>
+        {`
+          .tooltip {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 8px 8px rgba(0, 0, 0, 0.5);
+            display: none;
+            padding: 8px 12px;
+
+            &[data-visible='true'] {
+              display: block;
+            }
+          }
+        `}
+      </style>
     </MainLayout>
   );
 };

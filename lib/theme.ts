@@ -1,5 +1,6 @@
 const theme = Object.freeze({
   colors: {
+    amber500: '#FFC107',
     background: '#fff',
     backgroundAlt: '#fafafa',
     blue: '#2196f3',
@@ -11,6 +12,7 @@ const theme = Object.freeze({
     gray700: '#616161',
     gray800: '#424242',
     gray900: '#212121',
+    red500: '#F44336',
   },
   spacing: {
     [4]: 4,

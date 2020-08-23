@@ -66,7 +66,12 @@ const Header: React.FunctionComponent = () => {
       >
         <ListIcon height={24} width={24} color={theme.colors.blue} />
       </button>
-      <Button className="add-location-btn" onClick={() => alert('test')}>
+      <Button
+        className="add-location-btn"
+        onClick={() => {
+          router.push('/add-location');
+        }}
+      >
         <AddIcon height={24} width={24} style={{ marginRight: 4 }} />
         Add Location
       </Button>
