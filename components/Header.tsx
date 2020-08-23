@@ -1,6 +1,8 @@
 import * as React from 'react';
 import { useRouter } from 'next/router';
 
+import ListIcon from '../icons/list.svg';
+import MapIcon from '../icons/map.svg';
 import SearchIcon from '../icons/search.svg';
 import theme from '../lib/theme';
 
@@ -38,6 +40,31 @@ const Header: React.FunctionComponent = () => {
         />
         <SearchIcon />
       </div>
+      <button
+        className="map-list-btn"
+        disabled={router.pathname === '/map'}
+        onClick={() =>
+          router.push({
+            pathname: '/map',
+            query: router.query,
+          })
+        }
+      >
+        <MapIcon height={24} width={24} />
+      </button>
+      <button
+        className="map-list-btn"
+        disabled={router.pathname === '/list'}
+        onClick={() =>
+          router.push({
+            pathname: '/list',
+            query: router.query,
+          })
+        }
+      >
+        <ListIcon height={24} width={24} color={theme.colors.blue} />
+      </button>
+
       <style jsx>
         {`
           header {
@@ -71,6 +98,30 @@ const Header: React.FunctionComponent = () => {
               position: absolute;
               top: 6px;
               left: 8px;
+            }
+          }
+
+          .map-list-btn {
+            align-items: center;
+            background-color: transparent;
+            border: none;
+            display: flex;
+            height: 36px;
+            justify-content: center;
+            padding: 0;
+            width: 36px;
+
+            :first-of-type {
+              margin-left: 8px;
+            }
+
+            :last-of-type {
+              margin-right: 8px;
+            }
+
+            :enabled {
+              cursor: pointer;
+              filter: grayscale(100%);
             }
           }
         `}

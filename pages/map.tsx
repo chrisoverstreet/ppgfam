@@ -28,7 +28,7 @@ const Map: React.FunctionComponent = () => {
     zoom: 4,
   });
 
-  const { data } = useLocationsQuery({
+  useLocationsQuery({
     variables: { query },
     onCompleted: (data) =>
       debouncedSetLocations(
@@ -37,24 +37,22 @@ const Map: React.FunctionComponent = () => {
   });
 
   React.useEffect(() => {
-    const bounds: [Coordinates, Coordinates] = (
-      data?.locations.edges ?? []
-    ).reduce(
+    const bounds: [Coordinates, Coordinates] = locations.reduce(
       (
         [[westLongitude, southLatitude], [eastLongitude, northLatitude]],
-        { node: { longitude, latitude } },
+        { longitude, latitude },
       ) => [
         [Math.min(westLongitude, longitude), Math.min(southLatitude, latitude)],
         [Math.max(eastLongitude, longitude), Math.max(northLatitude, latitude)],
       ],
       [
         [
-          data?.locations.edges[0]?.node.longitude ?? -79.5231,
-          data?.locations.edges[0]?.node.latitude ?? 37.3343,
+          locations[0]?.longitude ?? -79.5231,
+          locations[0]?.latitude ?? 37.3343,
         ],
         [
-          data?.locations.edges[0]?.node.longitude ?? -79.5231,
-          data?.locations.edges[0]?.node.latitude ?? 37.3343,
+          locations[0]?.longitude ?? -79.5231,
+          locations[0]?.latitude ?? 37.3343,
         ],
       ],
     );
